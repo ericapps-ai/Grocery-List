@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thyme to Shop</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#F2EEE1;
+    --paper:#FBF8F0;
+    --ink:#26301F;
+    --ink-soft:#5B6152;
+    --pine:#2E4034;
+    --pine-light:#436153;
+    --mustard:#C89B3C;
+    --mustard-light:#E9D6A8;
+    --berry:#A33B44;
+    --line:#D9D3BF;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;}
+
+  svg{ width:20px; height:20px; display:inline-block; flex-shrink:0; }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+    position:relative;
+  }
+
+  header{
+    padding:28px 20px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  header h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+    margin:0;
+    color:var(--pine);
+    letter-spacing:-0.01em;
+  }
+  header p.sub{
+    margin:4px 0 0;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  main{
+    flex:1;
+    padding:16px 20px 100px;
+    overflow-y:auto;
+  }
+
+  nav.tabbar{
+    position:sticky;
+    bottom:0;
+    width:100%;
+    display:flex;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+  }
+  nav.tabbar button{
+    flex:1;
+    background:none;
+    border:none;
+    padding:14px 0 10px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-soft);
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+  }
+  nav.tabbar button.active{ color:var(--pine); }
+
+  button.primary{
+    background:var(--pine);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 20px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  button.primary:active{ transform:scale(0.97); }
+
+  button.ghost{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink);
+    border-radius:999px;
+    padding:10px 16px;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:13px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  button.text-link{
+    background:none;
+    border:none;
+    color:var(--pine);
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    padding:6px 4px;
+    font-family:'Inter',sans-serif;
+  }
+
+  .icon-btn{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    padding:6px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .icon-btn:disabled{ opacity:0.3; cursor:default; }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty svg{ width:40px; height:40px; opacity:0.5; margin-bottom:12px; }
+  .empty h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    color:var(--pine);
+    margin:0 0 6px;
+    font-size:18px;
+  }
+  .empty p{ margin:0 0 18px; font-size:14px; }
+
+  .category-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    cursor:pointer;
+  }
+  .category-card:active{ background:#F5F1E6; }
+  .category-card .cat-icon{
+    width:46px;
+    height:46px;
+    border-radius:12px;
+    background:var(--mustard-light);
+    color:#5A4114;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .category-card .cat-icon svg{ width:24px; height:24px; }
+  .category-card .cat-body{ flex:1; min-width:0; }
+  .category-card .cat-body h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:17px;
+    margin:0 0 3px;
+    color:var(--ink);
+  }
+  .category-card .cat-body p{
+    margin:0;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .category-card .chevron{ color:var(--ink-soft); flex-shrink:0; }
+  .category-card .chevron svg{ width:18px; height:18px; }
+
+  .recipe-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:4px;
+    cursor:pointer;
+  }
+  .recipe-card:active{ background:#F5F1E6; }
+  .recipe-card .name{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--ink);
+    margin:0 0 3px;
+  }
+  .recipe-card .count{ font-size:12.5px; color:var(--ink-soft); margin:0; }
+
+  .section-title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--pine);
+    margin:22px 0 10px;
+  }
+  .section-title:first-child{ margin-top:0; }
+
+  input[type=text], select{
+    width:100%;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--paper);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+  }
+  input[type=text]:focus, select:focus{
+    outline:none;
+    border-color:var(--pine-light);
+  }
+
+  label.field-label{
+    display:block;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field{ margin-bottom:18px; }
+
+  .ingredient-entry{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+  }
+  .ingredient-entry .row1{ margin-bottom:8px; }
+  .ingredient-entry .row2{ display:flex; gap:8px; margin-bottom:8px; }
+  .ingredient-entry .row2 input{ flex:1; min-width:0; }
+  .ingredient-entry .row2 select{ flex:1.3; min-width:0; }
+  .ingredient-entry .row3{ margin-bottom:10px; }
+  .entry-actions{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:8px;
+  }
+  button.add-full{
+    background:var(--pine);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:9px 16px;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:13px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+  }
+  button.add-full svg{ width:14px; height:14px; }
+
+  .ing-list{ margin-top:10px; }
+  .ing-row{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .ing-row:last-child{ border-bottom:none; }
+  .ing-main{
+    flex:1;
+    min-width:0;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .ing-name{ font-size:15px; color:var(--ink); }
+  .ing-aisle{ font-size:12px; color:var(--ink-soft); }
+  .ing-aisle.none{ font-style:italic; }
+  .ing-row.editing{ background:var(--mustard-light); margin:0 -8px; padding:8px; border-radius:8px; border-bottom:none; }
+
+  .top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .back-btn{
+    background:none;
+    border:none;
+    color:var(--pine);
+    display:flex;
+    align-items:center;
+    gap:4px;
+    font-weight:500;
+    font-size:14px;
+    cursor:pointer;
+    padding:4px 0;
+    font-family:'Inter',sans-serif;
+  }
+
+  .review-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .review-item:last-child{ border-bottom:none; }
+  .review-item .label{ font-size:15px; flex:1; }
+  .review-item.checked-off .label{ color:var(--ink-soft); text-decoration:line-through; }
+
+  .check{
+    width:22px;
+    height:22px;
+    border-radius:6px;
+    border:1.5px solid var(--pine-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    cursor:pointer;
+    background:var(--paper);
+  }
+  .check.checked{ background:var(--pine); border-color:var(--pine); }
+  .check svg{ width:14px; height:14px; stroke:#fff; opacity:0; }
+  .check.checked svg{ opacity:1; }
+
+  .cat-group{ margin-bottom:24px; }
+  .cat-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+    padding-bottom:5px;
+    border-bottom:1px solid var(--line);
+  }
+  .cat-header span{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--pine);
+  }
+  .cat-header .n{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-left:auto;
+  }
+
+  .list-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:11px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .list-item .label{ flex:1; font-size:15px; color:var(--ink); min-width:0; }
+  .list-item.checked .label{ color:var(--ink-soft); text-decoration:line-through; }
+  .list-item .del{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    padding:4px;
+    cursor:pointer;
+    display:flex;
+  }
+  .assign-select{
+    width:auto;
+    max-width:130px;
+    padding:6px 8px;
+    font-size:12px;
+    flex-shrink:0;
+  }
+
+  .yourlists-panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:20px;
+  }
+  .yourlists-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--pine);
+    margin-bottom:8px;
+  }
+  .yourlists-header .n{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+  }
+  .yourlist-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .yourlist-row:last-child{ border-bottom:none; }
+  .yourlist-icon{
+    width:22px;
+    height:22px;
+    border-radius:6px;
+    background:var(--berry);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .yourlist-icon svg{ width:13px; height:13px; }
+  .yourlist-name{ flex:1; font-size:14px; font-weight:500; color:var(--ink); min-width:0; }
+  .yourlist-count{ font-size:12px; color:var(--ink-soft); margin-right:4px; }
+
+  .adhoc-form{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:20px;
+  }
+  .adhoc-form .row{ display:flex; gap:8px; }
+  .adhoc-form .row input{ flex:1; min-width:0; }
+  .adhoc-form .row select{ width:130px; flex-shrink:0; }
+
+  .list-footer{ display:flex; gap:10px; margin-top:8px; }
+
+  .store-note{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 14px;
+    line-height:1.45;
+  }
+  .aisle-row{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:6px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .aisle-num{
+    width:24px;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-align:center;
+    flex-shrink:0;
+  }
+  .aisle-row input{
+    flex:1;
+    min-width:0;
+    width:auto;
+    padding:9px 11px;
+    margin-right:4px;
+  }
+  .store-footer{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:22px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+
+  .import-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:6px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .import-banner{
+    background:var(--mustard-light);
+    color:#5A4114;
+    padding:12px 14px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+    font-size:13px;
+  }
+  .import-banner button{
+    background:none;
+    border:none;
+    color:#5A4114;
+    cursor:pointer;
+    display:flex;
+    padding:2px;
+    flex-shrink:0;
+  }
+
+  .modal-veil{
+    position:fixed;
+    inset:0;
+    background:rgba(38,48,31,0.35);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:20;
+  }
+  .modal{
+    background:var(--paper);
+    width:100%;
+    max-width:480px;
+    border-radius:20px 20px 0 0;
+    padding:22px 20px 28px;
+  }
+  .modal h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:18px;
+    margin:0 0 16px;
+    color:var(--pine);
+  }
+  .modal .actions{ display:flex; gap:10px; margin-top:6px; }
+  .modal .actions button{ flex:1; justify-content:center; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const ICONS = {
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>',
+  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M3 4h2l2.4 11.5a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L21 8H6"/></svg>',
+  store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9v11h16V9"/><path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M10 20v-5h4v5"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>',
+  chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg>',
+  chevronUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 15 6-6 6 6"/></svg>',
+  chevronDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0-.8 13.4A2 2 0 0 1 15.2 21H8.8a2 2 0 0 1-2-1.6L6 6"/></svg>',
+  pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  carrot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 12c3-5 7-7 9-6-1 2-3 5-6 6"/><path d="M12 12C7 9 4 12 3 15c4 3 8 3 9-1 1-3-1-6-3-8Z"/><path d="M9 4l1.5 1.5M12 3l1 2M15 4.5 14 6"/></svg>',
+  spray: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 22h4a1 1 0 0 0 1-1v-9H8v9a1 1 0 0 0 1 1Z"/><path d="M8 12V9a2 2 0 0 1 2-2h1V5h2v2h.5L15 5"/><path d="M17 4l2-1M18 7h2.5M17 10l2 1"/></svg>',
+  cup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12l-1.5 17a1 1 0 0 1-1 .9h-7a1 1 0 0 1-1-.9L6 3Z"/><path d="M6.5 8h11"/></svg>',
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>',
+  download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>'
+};
+
+const UNITS = [
+  { id:'', label:'No unit' },
+  { id:'lb', label:'lb' }, { id:'oz', label:'oz' }, { id:'g', label:'g' }, { id:'kg', label:'kg' },
+  { id:'cup', label:'cup' }, { id:'tbsp', label:'tbsp' }, { id:'tsp', label:'tsp' },
+  { id:'ml', label:'ml' }, { id:'l', label:'l' }, { id:'fl_oz', label:'fl oz' },
+  { id:'pinch', label:'pinch' }, { id:'clove', label:'clove' }, { id:'whole', label:'whole' },
+  { id:'roll', label:'roll' }, { id:'bottle', label:'bottle' }, { id:'pack', label:'pack' },
+  { id:'box', label:'box' }, { id:'pair', label:'pair' }
+];
+
+const CATEGORIES = [
+  { id:'food', label:'Food', shortLabel:'Dishes', desc:'Dishes and their ingredients',
+    addLabel:'Add a dish', nameLabel:'Dish name', itemsLabel:'Ingredients', emptyNoun:'dishes',
+    namePh:'Chicken piccata', itemPh:'Capers', icon: ICONS.carrot },
+  { id:'drinks', label:'Drinks', shortLabel:'Drinks', desc:'Beverage lists',
+    addLabel:'Add a list', nameLabel:'List name', itemsLabel:'Items', emptyNoun:'lists',
+    namePh:'Game day drinks', itemPh:'Sparkling water', icon: ICONS.cup },
+  { id:'household', label:'Household and Personal Care', shortLabel:'Household', desc:'Cleaning, toiletries and supplies',
+    addLabel:'Add a list', nameLabel:'List name', itemsLabel:'Items', emptyNoun:'lists',
+    namePh:'Weekly bathroom clean', itemPh:'All-purpose cleaner', icon: ICONS.spray }
+];
+
+const DEFAULT_AISLES = [
+  'Produce','Meat & Seafood','Deli','Dairy & Eggs','Bakery','Canned Goods','Pasta & Grains',
+  'Baking','Spices & Seasonings','Condiments & Sauces','Frozen','Beverages',
+  'Household & Cleaning','Personal Care'
+];
+
+function catById(id){ return CATEGORIES.find(c => c.id === id) || CATEGORIES[0]; }
+const norm = s => (s == null ? '' : String(s)).trim().toLowerCase();
+
+function migrateCategory(c){
+  const v = norm(c);
+  if(v === 'household' || v === 'cleaning' || v === 'toiletries') return 'household';
+  if(v === 'drinks') return 'drinks';
+  return 'food';
+}
+
+function normalizeCategory(raw){
+  const v = norm(raw);
+  if(['food','dish','dishes','recipe','recipes'].includes(v)) return 'food';
+  if(['household','household and personal care','household & personal care','personal care','personal-care','cleaning','clean','toiletries','toiletry'].includes(v)) return 'household';
+  if(['drinks','drink','beverages','beverage'].includes(v)) return 'drinks';
+  return null;
+}
+
+let aisleAutoFilled = false;
+
+let state = {
+  tab: 'lists',
+  view: 'category-home',
+  recipes: [],
+  list: [],
+  aisles: [],
+  aisleMemory: {},
+  currentCategory: null,
+  editingRecipeId: null,
+  formName: '',
+  formIngredients: [],
+  entryDraft: null,
+  editingIngIndex: null,
+  reviewRecipeId: null,
+  reviewSelections: {},
+  showClearAllModal: false,
+  deleteConfirmRecipeId: null,
+  deleteAisleId: null,
+  pendingConflicts: null,
+  importGroups: null,
+  importSkipped: 0,
+  importError: null,
+  importNewAisles: [],
+  lastImportSummary: null,
+  storeMessage: null,
+  loaded: false
+};
+
+function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+/* ---------- storage ---------- */
+function readKey(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ console.error('load failed', key, e); return fallback; }
+}
+function writeKey(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); }
+  catch(e){ console.error('save failed', key, e); }
+}
+function hasKey(key){
+  try{ return localStorage.getItem(key) !== null; }catch(e){ return false; }
+}
+function saveRecipes(){ writeKey('recipes', state.recipes); }
+function saveList(){ writeKey('groceryList', state.list); }
+function saveAisles(){ writeKey('aisles', state.aisles); }
+function saveMemory(){ writeKey('aisleMemory', state.aisleMemory); }
+
+function normIng(ing){
+  if(typeof ing === 'string') return { name: ing, amount:'', unit:'', aisle:'' };
+  return { name: ing.name || '', amount: ing.amount || '', unit: ing.unit || '', aisle: ing.aisle || '' };
+}
+
+function loadData(){
+  state.recipes = readKey('recipes', []).map(rec => ({
+    id: rec.id || uid(),
+    name: rec.name || 'Untitled',
+    category: migrateCategory(rec.category),
+    ingredients: (rec.ingredients || []).map(normIng)
+  }));
+  state.list = readKey('groceryList', []).map(it => ({
+    ...it,
+    category: it.category ? migrateCategory(it.category) : null,
+    aisle: it.aisle || '',
+    amount: it.amount || '',
+    unit: it.unit || ''
+  }));
+  if(!hasKey('aisles')){
+    state.aisles = DEFAULT_AISLES.map(name => ({ id: uid(), name }));
+    saveAisles();
+  } else {
+    state.aisles = readKey('aisles', []).filter(a => a && a.id && a.name);
+  }
+  state.aisleMemory = readKey('aisleMemory', {});
+  state.loaded = true;
+  render();
+}
+
+/* ---------- aisle helpers ---------- */
+function aisleById(id){ return state.aisles.find(a => a.id === id) || null; }
+function aisleByName(name){
+  const n = norm(name);
+  return state.aisles.find(a => norm(a.name) === n) || null;
+}
+function resolveAisleId(name, storedId){
+  if(storedId && aisleById(storedId)) return storedId;
+  const mem = state.aisleMemory[norm(name)];
+  if(mem && aisleById(mem)) return mem;
+  return '';
+}
+function rememberAisle(name, aisleId){
+  const key = norm(name);
+  if(!key || !aisleId) return;
+  state.aisleMemory[key] = aisleId;
+}
+function aisleOptions(selected, blankLabel){
+  return `<option value="">${escapeHtml(blankLabel)}</option>` +
+    state.aisles.map(a => `<option value="${a.id}" ${a.id === selected ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
+}
+
+function go(view, extra){
+  state.view = view;
+  if(extra) Object.assign(state, extra);
+  render();
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatQty(ing){
+  const amt = (ing.amount || '').toString().trim();
+  const unit = ing.unit || '';
+  if(!amt) return '';
+  const unitLabel = UNITS.find(u => u.id === unit);
+  const unitText = unit && unitLabel ? (unit === 'whole' ? '' : ' ' + unitLabel.label) : '';
+  return `${amt}${unitText} `;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const app = document.getElementById('app');
+  if(!state.loaded){
+    app.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--ink-soft);font-size:14px;">Loading...</div>';
+    return;
+  }
+  let body = '';
+  let subtitle = 'What to shop for';
+  if(state.view === 'category-home'){ body = renderCategoryHome(); subtitle = 'Pick a kind of list'; }
+  else if(state.view === 'recipe-list'){ body = renderRecipeList(); subtitle = catById(state.currentCategory).label; }
+  else if(state.view === 'recipe-form'){ body = renderRecipeForm(); subtitle = catById(state.currentCategory).label; }
+  else if(state.view === 'review-recipe'){ body = renderReview(); subtitle = 'Choose what to add'; }
+  else if(state.view === 'list-home'){ body = renderListHome(); subtitle = 'What to pick up'; }
+  else if(state.view === 'store-home'){ body = renderStoreHome(); subtitle = 'My Store'; }
+  else if(state.view === 'import-preview'){ body = renderImportPreview(); subtitle = 'Import from CSV'; }
+
+  app.innerHTML = `
+    <header>
+      <h1>Thyme to Shop</h1>
+      <p class="sub">${escapeHtml(subtitle)}</p>
+    </header>
+    <main id="main">${body}</main>
+    <nav class="tabbar">
+      <button class="${state.tab==='lists'?'active':''}" onclick="switchTab('lists')">${ICONS.book}<span>Lists</span></button>
+      <button class="${state.tab==='grocery'?'active':''}" onclick="switchTab('grocery')">${ICONS.cart}<span>Grocery list</span></button>
+      <button class="${state.tab==='store'?'active':''}" onclick="switchTab('store')">${ICONS.store}<span>My Store</span></button>
+    </nav>
+  `;
+  attachHandlers();
+}
+
+function switchTab(tab){
+  state.tab = tab;
+  state.view = { lists:'category-home', grocery:'list-home', store:'store-home' }[tab];
+  render();
+}
+
+/* ---------- Lists tab ---------- */
+function renderCategoryHome(){
+  const cards = CATEGORIES.map(cat => {
+    const count = state.recipes.filter(r => r.category === cat.id).length;
+    return `
+      <div class="category-card" onclick="openCategory('${cat.id}')">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="cat-body">
+          <h3>${escapeHtml(cat.label)}</h3>
+          <p>${escapeHtml(cat.desc)} &middot; ${count} saved</p>
+        </div>
+        <div class="chevron">${ICONS.chevronRight}</div>
+      </div>
+    `;
+  }).join('');
+
+  const banner = state.lastImportSummary ? `
+    <div class="import-banner">
+      <span>${escapeHtml(state.lastImportSummary)}</span>
+      <button onclick="dismissImportSummary()" aria-label="Dismiss">${ICONS.x}</button>
+    </div>
+  ` : '';
+
+  return `
+    ${banner}
+    ${cards}
+    <div class="import-row">
+      <button class="ghost" onclick="triggerCsvFile()">${ICONS.upload} Import CSV</button>
+      <button class="text-link" onclick="downloadTemplate()">Download template</button>
+    </div>
+    <input type="file" id="csvFileInput" accept=".csv" style="display:none">
+  `;
+}
+
+function openCategory(catId){
+  go('recipe-list', { currentCategory: catId });
+}
+
+function renderRecipeList(){
+  const cat = catById(state.currentCategory);
+  const recipes = state.recipes.filter(r => r.category === cat.id).slice().sort((a,b) => a.name.localeCompare(b.name));
+
+  const topRow = `
+    <div class="top-row">
+      <button class="back-btn" onclick="go('category-home')">${ICONS.chevronLeft} Lists</button>
+    </div>
+  `;
+
+  if(recipes.length === 0){
+    return `
+      ${topRow}
+      <div class="empty">
+        ${cat.icon}
+        <h3>No ${cat.emptyNoun} yet</h3>
+        <p>Add one and its items once, then reuse it whenever you need to shop for it.</p>
+        <button class="primary" onclick="startNewRecipe()">${ICONS.plus} ${cat.addLabel}</button>
+      </div>
+    `;
+  }
+
+  const cards = recipes.map(r => `
+    <div class="recipe-card">
+      <div onclick="openReview('${r.id}')" style="flex:1;min-width:0;">
+        <p class="name">${escapeHtml(r.name)}</p>
+        <p class="count">${r.ingredients.length} item${r.ingredients.length===1?'':'s'}</p>
+      </div>
+      <button class="icon-btn" onclick="editRecipe('${r.id}')" aria-label="Edit">${ICONS.pencil}</button>
+      <button class="icon-btn" style="color:var(--berry)" onclick="confirmDeleteRecipe('${r.id}')" aria-label="Delete">${ICONS.trash}</button>
+    </div>
+  `).join('');
+
+  return `
+    ${topRow}
+    <div style="margin-bottom:16px;">
+      <button class="primary" onclick="startNewRecipe()">${ICONS.plus} ${cat.addLabel}</button>
+    </div>
+    ${cards}
+    ${state.deleteConfirmRecipeId ? renderDeleteRecipeModal() : ''}
+  `;
+}
+
+function renderDeleteRecipeModal(){
+  const recipe = state.recipes.find(r => r.id === state.deleteConfirmRecipeId);
+  const name = recipe ? recipe.name : 'this list';
+  return `
+    <div class="modal-veil" onclick="if(event.target===this) closeDeleteRecipeModal()">
+      <div class="modal">
+        <h3>Delete "${escapeHtml(name)}"?</h3>
+        <p style="font-size:14px;color:var(--ink-soft);margin:0 0 4px;">This only removes the saved list — anything already on your grocery list stays put.</p>
+        <div class="actions">
+          <button class="ghost" onclick="closeDeleteRecipeModal()">Cancel</button>
+          <button class="primary" style="background:var(--berry);justify-content:center;" onclick="deleteRecipe('${state.deleteConfirmRecipeId}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function startNewRecipe(){
+  go('recipe-form', { editingRecipeId:null, formName:'', formIngredients:[], entryDraft:null, editingIngIndex:null });
+}
+
+function renderRecipeForm(){
+  const cat = catById(state.currentCategory);
+  const editing = !!state.editingRecipeId;
+  const draft = state.entryDraft || { name:'', amount:'', unit:'', aisle:'' };
+  const editingIng = state.editingIngIndex !== null;
+
+  const rows = (state.formIngredients || []).map((ing,i) => {
+    const aId = resolveAisleId(ing.name, ing.aisle);
+    const a = aisleById(aId);
+    return `
+      <div class="ing-row ${state.editingIngIndex === i ? 'editing' : ''}">
+        <div class="ing-main" onclick="editFormIngredient(${i})">
+          <span class="ing-name">${escapeHtml(formatQty(ing))}${escapeHtml(ing.name)}</span>
+          <span class="ing-aisle ${a ? '' : 'none'}">${a ? escapeHtml(a.name) : 'No store section'}</span>
+        </div>
+        <button class="icon-btn" onclick="editFormIngredient(${i})" aria-label="Edit ingredient">${ICONS.pencil}</button>
+        <button class="icon-btn" onclick="removeFormIngredient(${i})" aria-label="Remove ingredient">${ICONS.x}</button>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="top-row">
+      <button class="back-btn" onclick="cancelRecipeForm()">${ICONS.chevronLeft} ${escapeHtml(cat.shortLabel)}</button>
+      ${editing ? `<button class="icon-btn" style="color:var(--berry)" onclick="confirmDeleteRecipe('${state.editingRecipeId}')" aria-label="Delete">${ICONS.trash}</button>` : ''}
+    </div>
+    <div class="field">
+      <label class="field-label">${cat.nameLabel}</label>
+      <input type="text" id="recipeNameInput" placeholder="${escapeHtml(cat.namePh)}" value="${escapeHtml(state.formName || '')}">
+    </div>
+    <div class="field">
+      <label class="field-label">${cat.itemsLabel}</label>
+      <div class="ingredient-entry">
+        <div class="row1">
+          <input type="text" id="ingredientInput" placeholder="${escapeHtml(cat.itemPh)}" value="${escapeHtml(draft.name)}">
+        </div>
+        <div class="row2">
+          <input type="text" id="ingredientAmount" placeholder="Amount (2, 1/2...)" value="${escapeHtml(draft.amount)}">
+          <select id="ingredientUnit">
+            ${UNITS.map(u => `<option value="${u.id}" ${u.id === draft.unit ? 'selected' : ''}>${u.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="row3">
+          <select id="ingredientAisle">${aisleOptions(draft.aisle, 'Store section (optional)')}</select>
+        </div>
+        <div class="entry-actions">
+          ${editingIng ? '<button class="text-link" onclick="cancelIngredientEdit()">Cancel</button>' : ''}
+          <button class="add-full" onclick="addFormIngredient()">${ICONS.plus} ${editingIng ? 'Update' : 'Add'}</button>
+        </div>
+      </div>
+      <div class="ing-list">
+        ${rows || '<span style="font-size:13px;color:var(--ink-soft)">Nothing added yet.</span>'}
+      </div>
+    </div>
+    <button class="primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="saveRecipeForm()">Save</button>
+    ${state.deleteConfirmRecipeId ? renderDeleteRecipeModal() : ''}
+  `;
+}
+
+function readEntryFields(){
+  const n = document.getElementById('ingredientInput');
+  if(!n) return null;
+  return {
+    name: n.value,
+    amount: document.getElementById('ingredientAmount').value,
+    unit: document.getElementById('ingredientUnit').value,
+    aisle: document.getElementById('ingredientAisle').value
+  };
+}
+function syncDraft(){
+  const d = readEntryFields();
+  if(d) state.entryDraft = d;
+}
+
+function addFormIngredient(){
+  const input = document.getElementById('ingredientInput');
+  const d = readEntryFields();
+  const name = d.name.trim();
+  if(!name){
+    input.style.borderColor = 'var(--berry)';
+    input.focus();
+    return;
+  }
+  const aisle = d.aisle || resolveAisleId(name, '');
+  const ing = { name, amount: d.amount.trim(), unit: d.unit, aisle };
+  if(aisle) rememberAisle(name, aisle);
+  saveMemory();
+  state.formIngredients = state.formIngredients || [];
+  if(state.editingIngIndex !== null){
+    state.formIngredients[state.editingIngIndex] = ing;
+  } else {
+    state.formIngredients.push(ing);
+  }
+  state.formIngredients.sort((a,b) => a.name.localeCompare(b.name));
+  state.entryDraft = null;
+  state.editingIngIndex = null;
+  aisleAutoFilled = false;
+  render();
+  const next = document.getElementById('ingredientInput');
+  if(next) next.focus();
+}
+
+function editFormIngredient(i){
+  const ing = state.formIngredients[i];
+  if(!ing) return;
+  state.editingIngIndex = i;
+  state.entryDraft = { name: ing.name, amount: ing.amount || '', unit: ing.unit || '', aisle: ing.aisle || '' };
+  aisleAutoFilled = false;
+  render();
+  const el = document.getElementById('ingredientInput');
+  if(el) el.focus();
+}
+
+function cancelIngredientEdit(){
+  state.editingIngIndex = null;
+  state.entryDraft = null;
+  render();
+}
+
+function removeFormIngredient(i){
+  state.formIngredients.splice(i,1);
+  if(state.editingIngIndex !== null){
+    state.editingIngIndex = null;
+    state.entryDraft = null;
+  }
+  render();
+}
+
+function editRecipe(recipeId){
+  const recipe = state.recipes.find(r => r.id === recipeId);
+  if(!recipe) return;
+  go('recipe-form', {
+    editingRecipeId: recipeId,
+    formName: recipe.name,
+    formIngredients: recipe.ingredients.map(i => ({...i})).sort((a,b) => a.name.localeCompare(b.name)),
+    entryDraft: null,
+    editingIngIndex: null
+  });
+}
+
+function cancelRecipeForm(){
+  go('recipe-list', { entryDraft:null, editingIngIndex:null });
+}
+
+async function saveRecipeForm(){
+  const nameInput = document.getElementById('recipeNameInput');
+  const name = (nameInput.value || '').trim();
+  if(!name){
+    nameInput.style.borderColor = 'var(--berry)';
+    nameInput.focus();
+    return;
+  }
+  const ingredients = (state.formIngredients || []).slice().sort((a,b) => a.name.localeCompare(b.name));
+  if(state.editingRecipeId){
+    const recipe = state.recipes.find(r => r.id === state.editingRecipeId);
+    recipe.name = name;
+    recipe.ingredients = ingredients;
+  } else {
+    state.recipes.push({ id: uid(), name, category: state.currentCategory, ingredients });
+  }
+  saveRecipes();
+  go('recipe-list', { entryDraft:null, editingIngIndex:null });
+}
+
+function confirmDeleteRecipe(recipeId){
+  state.deleteConfirmRecipeId = recipeId;
+  render();
+}
+function closeDeleteRecipeModal(){
+  state.deleteConfirmRecipeId = null;
+  render();
+}
+function deleteRecipe(recipeId){
+  state.recipes = state.recipes.filter(r => r.id !== recipeId);
+  state.deleteConfirmRecipeId = null;
+  saveRecipes();
+  go('recipe-list', { entryDraft:null, editingIngIndex:null });
+}
+
+/* ---------- Review & add to grocery list ---------- */
+function openReview(recipeId){
+  state.reviewRecipeId = recipeId;
+  state.reviewSelections = {};
+  go('review-recipe');
+}
+
+function renderReview(){
+  const recipe = state.recipes.find(r => r.id === state.reviewRecipeId);
+  if(!recipe) return '<p>Not found.</p>';
+  const cat = catById(recipe.category);
+  const sorted = recipe.ingredients.map((ing, i) => ({ ing, i })).sort((a,b) => a.ing.name.localeCompare(b.ing.name));
+  const items = sorted.map(({ing, i}) => {
+    const checked = state.reviewSelections[i] !== false;
+    const a = aisleById(resolveAisleId(ing.name, ing.aisle));
+    return `
+      <div class="review-item ${checked?'':'checked-off'}">
+        <div class="check ${checked?'checked':''}" onclick="toggleReviewItem(${i})">${ICONS.check}</div>
+        <span class="label">${escapeHtml(formatQty(ing))}${escapeHtml(ing.name)}</span>
+        ${a ? `<span style="font-size:11px;color:var(--ink-soft);">${escapeHtml(a.name)}</span>` : ''}
+      </div>
+    `;
+  }).join('');
+  const selectedCount = recipe.ingredients.filter((_,i) => state.reviewSelections[i] !== false).length;
+  return `
+    <div class="top-row">
+      <button class="back-btn" onclick="openCategory('${recipe.category}')">${ICONS.chevronLeft} ${escapeHtml(cat.shortLabel)}</button>
+    </div>
+    <p class="section-title" style="margin-top:0;">${escapeHtml(recipe.name)}</p>
+    <p style="font-size:13px;color:var(--ink-soft);margin:-6px 0 6px;">Uncheck anything you already have.</p>
+    ${items}
+    <button class="primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="attemptAddToList()">
+      Add ${selectedCount} to grocery list
+    </button>
+    ${state.pendingConflicts ? renderMergeConfirmModal() : ''}
+  `;
+}
+
+function toggleReviewItem(i){
+  state.reviewSelections[i] = state.reviewSelections[i] === false ? true : false;
+  render();
+}
+
+function renderMergeConfirmModal(){
+  const items = state.pendingConflicts.map(c => `
+    <li>${escapeHtml(c.name)} — already on your list${c.existingLabel ? ' from ' + escapeHtml(c.existingLabel) : ''}</li>
+  `).join('');
+  return `
+    <div class="modal-veil" onclick="if(event.target===this) cancelMergeConfirm()">
+      <div class="modal">
+        <h3>Combine duplicate items?</h3>
+        <p style="font-size:14px;color:var(--ink-soft);margin:0 0 10px;">These items are already on your grocery list from another dish:</p>
+        <ul style="margin:0 0 14px;padding-left:18px;font-size:14px;color:var(--ink);">${items}</ul>
+        <div class="actions">
+          <button class="ghost" onclick="resolveMerge(false)">Keep separate</button>
+          <button class="primary" style="justify-content:center;" onclick="resolveMerge(true)">Combine</button>
+        </div>
+        <button class="text-link" style="width:100%;text-align:center;margin-top:8px;" onclick="cancelMergeConfirm()">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+function sourcesOf(it){
+  return (it.sourceRecipes && it.sourceRecipes.length) ? it.sourceRecipes : (it.recipeName ? [it.recipeName] : []);
+}
+function openMatches(name){
+  const n = norm(name);
+  return state.list.filter(it => it.source !== 'adhoc' && !it.checked && norm(it.name) === n);
+}
+
+function attemptAddToList(){
+  const recipe = state.recipes.find(r => r.id === state.reviewRecipeId);
+  if(!recipe) return;
+  const conflicts = [];
+  recipe.ingredients.forEach((ing, i) => {
+    if(state.reviewSelections[i] === false) return;
+    const matches = openMatches(ing.name);
+    if(matches.length === 0) return;
+    if(matches.some(m => sourcesOf(m).includes(recipe.name))) return; // already added from this dish
+    conflicts.push({ name: ing.name, existingLabel: matches[0].recipeName || '' });
+  });
+  if(conflicts.length > 0){
+    state.pendingConflicts = conflicts;
+    render();
+  } else {
+    addReviewToList(true);
+  }
+}
+
+function resolveMerge(shouldMerge){
+  state.pendingConflicts = null;
+  addReviewToList(shouldMerge);
+}
+function cancelMergeConfirm(){
+  state.pendingConflicts = null;
+  render();
+}
+
+function parseAmountNumber(str){
+  const s = (str || '').toString().trim();
+  if(!s) return null;
+  const mixed = s.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+  if(mixed){
+    const d = Number(mixed[3]);
+    if(d === 0) return null;
+    return Number(mixed[1]) + Number(mixed[2]) / d;
+  }
+  const frac = s.match(/^(\d+)\/(\d+)$/);
+  if(frac){
+    const d = Number(frac[2]);
+    if(d === 0) return null;
+    return Number(frac[1]) / d;
+  }
+  const num = Number(s);
+  return isNaN(num) ? null : num;
+}
+function formatSummedAmount(num){
+  return String(Math.round(num * 100) / 100);
+}
+
+function addReviewToList(mergeDuplicates){
+  const recipe = state.recipes.find(r => r.id === state.reviewRecipeId);
+  if(!recipe) return;
+  const multiLabel = recipe.category === 'food' ? 'Multiple Dishes' : 'Multiple Lists';
+  recipe.ingredients.forEach((ing, i) => {
+    if(state.reviewSelections[i] === false) return;
+    const aisle = resolveAisleId(ing.name, ing.aisle);
+    const matches = openMatches(ing.name);
+    if(matches.some(m => sourcesOf(m).includes(recipe.name))) return; // never add the same dish twice
+    const target = mergeDuplicates ? matches[0] : null;
+    if(target){
+      const a1 = parseAmountNumber(target.amount);
+      const a2 = parseAmountNumber(ing.amount);
+      if((target.unit || '') === (ing.unit || '') && a1 !== null && a2 !== null){
+        target.amount = formatSummedAmount(a1 + a2);
+        target.qtyText = formatQty({ amount: target.amount, unit: target.unit });
+      }
+      if(!target.aisle && aisle) target.aisle = aisle;
+      const sources = sourcesOf(target).slice();
+      if(!sources.includes(recipe.name)) sources.push(recipe.name);
+      target.sourceRecipes = sources;
+      if(sources.length > 1){
+        target.source = 'multiple';
+        target.recipeName = multiLabel;
+      }
+      return;
+    }
+    state.list.push({
+      id: uid(), name: ing.name, amount: ing.amount, unit: ing.unit, qtyText: formatQty(ing),
+      aisle, category: recipe.category, checked: false,
+      source: 'recipe', recipeName: recipe.name, sourceRecipes: [recipe.name]
+    });
+  });
+  saveList();
+  state.tab = 'grocery';
+  go('list-home');
+}
+
+/* ---------- Grocery list tab ---------- */
+function getContributingLists(){
+  const map = {};
+  state.list.forEach(it => {
+    if(it.source === 'adhoc') return;
+    sourcesOf(it).forEach(name => { map[name] = (map[name] || 0) + 1; });
+  });
+  return Object.keys(map).sort((a,b) => a.localeCompare(b)).map(name => ({ name, count: map[name] }));
+}
+
+function renderYourLists(){
+  const lists = getContributingLists();
+  if(lists.length === 0) return '';
+  const rows = lists.map(l => `
+    <div class="yourlist-row">
+      <span class="yourlist-icon">${ICONS.book}</span>
+      <span class="yourlist-name">${escapeHtml(l.name)}</span>
+      <span class="yourlist-count">${l.count} item${l.count===1?'':'s'}</span>
+      <button class="text-link" data-name="${escapeHtml(l.name)}" onclick="removeSourceList(this.dataset.name)">Remove</button>
+    </div>
+  `).join('');
+  return `
+    <div class="yourlists-panel">
+      <div class="yourlists-header"><span>Your lists</span><span class="n">${lists.length}</span></div>
+      ${rows}
+    </div>
+  `;
+}
+
+function groupByAisle(){
+  const groups = state.aisles.map(a => ({ id: a.id, name: a.name, items: [] }));
+  const unassigned = { id:'', name:'Unassigned', items: [] };
+  state.list.forEach(it => {
+    const id = resolveAisleId(it.name, it.aisle);
+    const g = id ? groups.find(x => x.id === id) : null;
+    (g || unassigned).items.push(it);
+  });
+  groups.push(unassigned);
+  groups.forEach(g => g.items.sort((a,b) => a.name.localeCompare(b.name)));
+  return groups.filter(g => g.items.length > 0);
+}
+
+function renderListHome(){
+  const sections = groupByAisle().map(g => {
+    const rows = g.items.map(it => `
+      <div class="list-item ${it.checked?'checked':''}">
+        <div class="check ${it.checked?'checked':''}" onclick="toggleListItem('${it.id}')">${ICONS.check}</div>
+        <span class="label">${escapeHtml(it.qtyText || '')}${escapeHtml(it.name)}</span>
+        ${g.id === '' && state.aisles.length ? `<select class="assign-select" onchange="assignItemAisle('${it.id}', this.value)" aria-label="Pick store section">${aisleOptions('', 'Pick section')}</select>` : ''}
+        <button class="del" onclick="removeListItem('${it.id}')" aria-label="Remove">${ICONS.x}</button>
+      </div>
+    `).join('');
+    return `
+      <div class="cat-group">
+        <div class="cat-header"><span>${escapeHtml(g.name)}</span><span class="n">${g.items.length}</span></div>
+        ${rows}
+      </div>
+    `;
+  }).join('');
+
+  const hasItems = state.list.length > 0;
+
+  return `
+    ${renderYourLists()}
+    <div class="adhoc-form">
+      <label class="field-label">Add an item not tied to a list</label>
+      <div class="row">
+        <input type="text" id="adhocName" placeholder="Paper towels">
+        <select id="adhocAisle" aria-label="Store section">${aisleOptions('', 'No section')}</select>
+        <button class="primary" style="padding:0 14px;" onclick="addAdhocItem()" aria-label="Add item">${ICONS.plus}</button>
+      </div>
+    </div>
+    ${hasItems ? sections : `
+      <div class="empty">
+        ${ICONS.cart}
+        <h3>Your list is empty</h3>
+        <p>Add items from a saved list, or drop in a one-off item above.</p>
+      </div>
+    `}
+    ${hasItems ? `
+      <div class="list-footer">
+        <button class="ghost" onclick="clearAllConfirm()">Clear list</button>
+      </div>
+    ` : ''}
+    ${state.showClearAllModal ? renderClearAllModal() : ''}
+  `;
+}
+
+function renderClearAllModal(){
+  return `
+    <div class="modal-veil" onclick="if(event.target===this) closeClearAllModal()">
+      <div class="modal">
+        <h3>Clear the whole list?</h3>
+        <p style="font-size:14px;color:var(--ink-soft);margin:0 0 4px;">This removes every item, checked or not.</p>
+        <div class="actions">
+          <button class="ghost" onclick="closeClearAllModal()">Cancel</button>
+          <button class="primary" style="background:var(--berry);justify-content:center;" onclick="clearAllList()">Clear list</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function addAdhocItem(){
+  const nameInput = document.getElementById('adhocName');
+  const sel = document.getElementById('adhocAisle');
+  const name = nameInput.value.trim();
+  if(!name){
+    nameInput.style.borderColor = 'var(--berry)';
+    nameInput.focus();
+    return;
+  }
+  const aisle = sel.value;
+  if(aisle){ rememberAisle(name, aisle); saveMemory(); }
+  state.list.push({
+    id: uid(), name, amount:'', unit:'', qtyText:'', aisle, category:null,
+    checked:false, source:'adhoc', recipeName:'', sourceRecipes:[]
+  });
+  saveList();
+  render();
+}
+
+function assignItemAisle(id, aisleId){
+  if(!aisleId) return;
+  const it = state.list.find(x => x.id === id);
+  if(!it) return;
+  it.aisle = aisleId;
+  rememberAisle(it.name, aisleId);
+  saveMemory();
+  saveList();
+  render();
+}
+
+function toggleListItem(id){
+  const it = state.list.find(x => x.id === id);
+  if(it) it.checked = !it.checked;
+  saveList();
+  render();
+}
+
+function removeListItem(id){
+  state.list = state.list.filter(x => x.id !== id);
+  saveList();
+  render();
+}
+
+function removeSourceList(name){
+  const result = [];
+  state.list.forEach(it => {
+    if(it.source === 'adhoc'){ result.push(it); return; }
+    let sources = sourcesOf(it).slice();
+    if(!sources.includes(name)){ result.push(it); return; }
+    sources = sources.filter(s => s !== name);
+    if(sources.length === 0) return;
+    it.sourceRecipes = sources;
+    if(sources.length === 1){
+      it.source = 'recipe';
+      it.recipeName = sources[0];
+    } else {
+      it.source = 'multiple';
+      it.recipeName = it.category === 'food' ? 'Multiple Dishes' : 'Multiple Lists';
+    }
+    result.push(it);
+  });
+  state.list = result;
+  saveList();
+  render();
+}
+
+function clearAllConfirm(){ state.showClearAllModal = true; render(); }
+function closeClearAllModal(){ state.showClearAllModal = false; render(); }
+function clearAllList(){
+  state.list = [];
+  state.showClearAllModal = false;
+  saveList();
+  render();
+}
+
+/* ---------- My Store tab ---------- */
+function renderStoreHome(){
+  const last = state.aisles.length - 1;
+  const rows = state.aisles.map((a, i) => `
+    <div class="aisle-row">
+      <span class="aisle-num">${i + 1}</span>
+      <input type="text" value="${escapeHtml(a.name)}" onchange="renameAisle('${a.id}', this.value)" aria-label="Section name">
+      <button class="icon-btn" ${i === 0 ? 'disabled' : ''} onclick="moveAisle('${a.id}', -1)" aria-label="Move up">${ICONS.chevronUp}</button>
+      <button class="icon-btn" ${i === last ? 'disabled' : ''} onclick="moveAisle('${a.id}', 1)" aria-label="Move down">${ICONS.chevronDown}</button>
+      <button class="icon-btn" style="color:var(--berry)" onclick="confirmDeleteAisle('${a.id}')" aria-label="Delete section">${ICONS.trash}</button>
+    </div>
+  `).join('');
+
+  const banner = state.storeMessage ? `
+    <div class="import-banner">
+      <span>${escapeHtml(state.storeMessage)}</span>
+      <button onclick="dismissStoreMessage()" aria-label="Dismiss">${ICONS.x}</button>
+    </div>
+  ` : '';
+
+  return `
+    ${banner}
+    <p class="store-note">List your store's sections in the order you walk through them. Your grocery list follows this order, top to bottom.</p>
+    <div class="adhoc-form">
+      <label class="field-label">Add a section</label>
+      <div class="row">
+        <input type="text" id="newAisleInput" placeholder="Produce">
+        <button class="primary" style="padding:0 14px;" onclick="addAisle()" aria-label="Add section">${ICONS.plus}</button>
+      </div>
+    </div>
+    ${rows || '<p class="store-note">No sections yet. Add your first one above.</p>'}
+    <div class="store-footer">
+      <button class="ghost" onclick="exportLayout()">${ICONS.download} Back up layout</button>
+      <button class="ghost" onclick="triggerLayoutFile()">${ICONS.upload} Restore layout</button>
+    </div>
+    <input type="file" id="layoutFileInput" accept=".json,application/json" style="display:none">
+    ${state.deleteAisleId ? renderDeleteAisleModal() : ''}
+  `;
+}
+
+function renderDeleteAisleModal(){
+  const a = aisleById(state.deleteAisleId);
+  const name = a ? a.name : 'this section';
+  return `
+    <div class="modal-veil" onclick="if(event.target===this) closeDeleteAisleModal()">
+      <div class="modal">
+        <h3>Delete "${escapeHtml(name)}"?</h3>
+        <p style="font-size:14px;color:var(--ink-soft);margin:0 0 4px;">Items in this section will show as Unassigned on your grocery list until you pick a new section for them.</p>
+        <div class="actions">
+          <button class="ghost" onclick="closeDeleteAisleModal()">Cancel</button>
+          <button class="primary" style="background:var(--berry);justify-content:center;" onclick="deleteAisle('${state.deleteAisleId}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function dismissStoreMessage(){ state.storeMessage = null; render(); }
+
+function addAisle(){
+  const input = document.getElementById('newAisleInput');
+  const name = input.value.trim();
+  if(!name){
+    input.style.borderColor = 'var(--berry)';
+    input.focus();
+    return;
+  }
+  const dup = aisleByName(name);
+  if(dup){
+    state.storeMessage = `"${dup.name}" is already in your store.`;
+    render();
+    return;
+  }
+  state.aisles.push({ id: uid(), name });
+  saveAisles();
+  state.storeMessage = null;
+  render();
+  const next = document.getElementById('newAisleInput');
+  if(next) next.focus();
+}
+
+function renameAisle(id, value){
+  const a = aisleById(id);
+  if(!a) return;
+  const name = value.trim();
+  const dup = aisleByName(name);
+  if(!name || (dup && dup.id !== id)){
+    state.storeMessage = !name ? 'A section needs a name.' : `"${dup.name}" is already in your store.`;
+    render();
+    return;
+  }
+  a.name = name;
+  saveAisles(); // no re-render here so a tap on another button right after a rename still lands
+}
+
+function moveAisle(id, dir){
+  const i = state.aisles.findIndex(a => a.id === id);
+  const j = i + dir;
+  if(i < 0 || j < 0 || j >= state.aisles.length) return;
+  const tmp = state.aisles[i];
+  state.aisles[i] = state.aisles[j];
+  state.aisles[j] = tmp;
+  saveAisles();
+  render();
+}
+
+function confirmDeleteAisle(id){ state.deleteAisleId = id; render(); }
+function closeDeleteAisleModal(){ state.deleteAisleId = null; render(); }
+
+function deleteAisle(id){
+  state.aisles = state.aisles.filter(a => a.id !== id);
+  state.recipes.forEach(r => r.ingredients.forEach(ing => { if(ing.aisle === id) ing.aisle = ''; }));
+  state.list.forEach(it => { if(it.aisle === id) it.aisle = ''; });
+  Object.keys(state.aisleMemory).forEach(k => { if(state.aisleMemory[k] === id) delete state.aisleMemory[k]; });
+  state.deleteAisleId = null;
+  saveAisles(); saveRecipes(); saveList(); saveMemory();
+  render();
+}
+
+function exportLayout(){
+  const memory = {};
+  Object.keys(state.aisleMemory).forEach(k => {
+    const a = aisleById(state.aisleMemory[k]);
+    if(a) memory[k] = a.name;
+  });
+  const data = { app:'thyme-to-shop', type:'store-layout', version:1, aisles: state.aisles.map(a => a.name), memory };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'thyme-to-shop-store-layout.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function triggerLayoutFile(){
+  const input = document.getElementById('layoutFileInput');
+  if(input) input.click();
+}
+
+async function handleLayoutFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  let data;
+  try{
+    data = JSON.parse((await file.text()).replace(/^﻿/, ''));
+  }catch(err){
+    state.storeMessage = "Couldn't read that file. Pick a layout file made with Back up layout.";
+    e.target.value = '';
+    render();
+    return;
+  }
+  e.target.value = '';
+  if(!data || data.type !== 'store-layout' || !Array.isArray(data.aisles)){
+    state.storeMessage = "That file isn't a store layout backup.";
+    render();
+    return;
+  }
+  const next = [];
+  data.aisles.filter(n => typeof n === 'string' && n.trim()).forEach(n => {
+    if(next.some(a => norm(a.name) === norm(n))) return;
+    next.push(aisleByName(n) || { id: uid(), name: n.trim() });
+  });
+  state.aisles.forEach(a => { if(!next.some(x => x.id === a.id)) next.push(a); });
+  state.aisles = next;
+  let mapped = 0;
+  Object.keys(data.memory || {}).forEach(k => {
+    const a = aisleByName(data.memory[k]);
+    if(a){ state.aisleMemory[norm(k)] = a.id; mapped++; }
+  });
+  saveAisles(); saveMemory();
+  state.storeMessage = `Layout restored: ${data.aisles.length} section${data.aisles.length===1?'':'s'} and ${mapped} remembered ingredient${mapped===1?'':'s'}.`;
+  render();
+}
+
+/* ---------- CSV import ---------- */
+function attachHandlers(){
+  const nameInput = document.getElementById('recipeNameInput');
+  if(nameInput) nameInput.oninput = e => { state.formName = e.target.value; };
+
+  const ingInput = document.getElementById('ingredientInput');
+  if(ingInput){
+    ingInput.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); addFormIngredient(); } };
+    ingInput.oninput = () => {
+      const sel = document.getElementById('ingredientAisle');
+      const mem = state.aisleMemory[norm(ingInput.value)];
+      if(mem && aisleById(mem)){
+        if(!sel.value || aisleAutoFilled){ sel.value = mem; aisleAutoFilled = true; }
+      } else if(aisleAutoFilled){
+        sel.value = '';
+        aisleAutoFilled = false;
+      }
+      syncDraft();
+    };
+    const amt = document.getElementById('ingredientAmount');
+    const unit = document.getElementById('ingredientUnit');
+    const aisle = document.getElementById('ingredientAisle');
+    amt.oninput = syncDraft;
+    unit.onchange = syncDraft;
+    aisle.onchange = () => { aisleAutoFilled = false; syncDraft(); };
+  }
+
+  const adhocName = document.getElementById('adhocName');
+  if(adhocName) adhocName.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); addAdhocItem(); } };
+
+  const newAisle = document.getElementById('newAisleInput');
+  if(newAisle) newAisle.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); addAisle(); } };
+
+  const csvInput = document.getElementById('csvFileInput');
+  if(csvInput) csvInput.onchange = handleCsvFile;
+
+  const layoutInput = document.getElementById('layoutFileInput');
+  if(layoutInput) layoutInput.onchange = handleLayoutFile;
+}
+
+function triggerCsvFile(){
+  const input = document.getElementById('csvFileInput');
+  if(input) input.click();
+}
+
+function downloadTemplate(){
+  const csv = [
+    'category,list_name,item_name,amount,unit,grocery_aisle',
+    'food,Chicken Piccata,chicken breast,2,lb,Meat & Seafood',
+    'food,Chicken Piccata,capers,2,tbsp,Canned Goods',
+    'food,Chicken Piccata,lemon,1,whole,Produce',
+    'food,Chicken Piccata,white wine,1/2,cup,Beverages',
+    'household,Weekly Bathroom Clean,all-purpose cleaner,1,bottle,Household & Cleaning',
+    'household,Weekly Bathroom Clean,paper towels,1,roll,Household & Cleaning',
+    'household,Monthly Restock,shampoo,,,Personal Care',
+    'household,Monthly Restock,toothpaste,,,Personal Care',
+    'drinks,Game Day,sparkling water,2,pack,Beverages',
+    'drinks,Game Day,ginger beer,1,pack,Beverages'
+  ].join('\n') + '\n';
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'thyme-to-shop-template.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\n' || c === '\r'){
+        if(c === '\r' && text[i+1] === '\n') i++;
+        row.push(field); field = '';
+        rows.push(row); row = [];
+      } else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => !(r.length === 1 && r[0].trim() === ''));
+}
+
+function dismissImportSummary(){ state.lastImportSummary = null; render(); }
+
+function cancelImport(){
+  state.importGroups = null;
+  state.importError = null;
+  state.importSkipped = 0;
+  state.importNewAisles = [];
+  go('category-home');
+}
+
+function renderImportPreview(){
+  if(state.importError){
+    return `
+      <div class="top-row"><button class="back-btn" onclick="cancelImport()">${ICONS.chevronLeft} Lists</button></div>
+      <div class="empty">
+        <h3>Import problem</h3>
+        <p>${escapeHtml(state.importError)}</p>
+        <button class="primary" onclick="cancelImport()">Back to Lists</button>
+      </div>
+    `;
+  }
+  const groups = state.importGroups || [];
+  const rows = groups.map(g => {
+    const cat = catById(g.category);
+    return `
+      <div class="recipe-card" style="cursor:default;">
+        <div style="flex:1;">
+          <p class="name">${escapeHtml(g.name)}</p>
+          <p class="count">${escapeHtml(cat.label)} &middot; ${g.items.length} item${g.items.length===1?'':'s'} &middot; ${g.isNew ? 'New list' : 'Adds to existing list'}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+  const newAisles = state.importNewAisles || [];
+  return `
+    <div class="top-row"><button class="back-btn" onclick="cancelImport()">${ICONS.chevronLeft} Cancel</button></div>
+    <p class="section-title" style="margin-top:0;">Ready to import</p>
+    ${rows}
+    ${newAisles.length ? `<p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;">New store sections will be added at the end of My Store: ${escapeHtml(newAisles.join(', '))}.</p>` : ''}
+    ${state.importSkipped ? `<p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;">${state.importSkipped} row${state.importSkipped===1?'':'s'} skipped (missing or unrecognized category, list name, or item name).</p>` : ''}
+    <button class="primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="applyImport()">Confirm import</button>
+  `;
+}
+
+async function handleCsvFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  let text;
+  try{ text = await file.text(); }
+  catch(err){
+    state.importError = "Couldn't read that file. Please try again.";
+    go('import-preview');
+    return;
+  }
+  text = text.replace(/^﻿/, '');
+  const rows = parseCSV(text);
+  if(rows.length < 2){
+    e.target.value = '';
+    state.importError = 'That file has no data rows to import.';
+    go('import-preview');
+    return;
+  }
+  const header = rows[0].map(h => h.trim().toLowerCase());
+  const col = name => header.indexOf(name);
+  const idx = {
+    category: col('category'),
+    list_name: col('list_name'),
+    item_name: col('item_name'),
+    amount: col('amount'),
+    unit: col('unit'),
+    aisle: col('grocery_aisle') !== -1 ? col('grocery_aisle') : col('aisle')
+  };
+  e.target.value = '';
+  if(idx.category === -1 || idx.list_name === -1 || idx.item_name === -1){
+    state.importError = 'Missing one or more required columns: category, list_name, item_name. Download the template to see the expected format.';
+    go('import-preview');
+    return;
+  }
+
+  const groupsMap = {};
+  let skipped = 0;
+  const newAisles = [];
+  for(let r = 1; r < rows.length; r++){
+    const row = rows[r];
+    const category = normalizeCategory(row[idx.category]);
+    const listName = (row[idx.list_name] || '').trim();
+    const itemName = (row[idx.item_name] || '').trim();
+    const amount = idx.amount > -1 ? (row[idx.amount] || '').trim() : '';
+    const unitRaw = idx.unit > -1 ? (row[idx.unit] || '').trim().toLowerCase() : '';
+    const aisleName = idx.aisle > -1 ? (row[idx.aisle] || '').trim() : '';
+    if(!category || !listName || !itemName){ skipped++; continue; }
+    const unit = UNITS.some(u => u.id === unitRaw) ? unitRaw : '';
+    const key = category + '|' + listName.toLowerCase();
+    if(!groupsMap[key]) groupsMap[key] = { category, name: listName, items: [] };
+    groupsMap[key].items.push({ name: itemName, amount, unit, aisleName });
+    if(aisleName && !aisleByName(aisleName) && !newAisles.some(n => norm(n) === norm(aisleName))) newAisles.push(aisleName);
+  }
+
+  const groups = Object.values(groupsMap);
+  groups.forEach(g => {
+    const existing = state.recipes.find(r => r.category === g.category && norm(r.name) === norm(g.name));
+    g.isNew = !existing;
+    g.existingId = existing ? existing.id : null;
+  });
+
+  if(groups.length === 0){
+    state.importError = 'No valid rows were found in that file. Check that category, list_name, and item_name are filled in for each row.';
+    go('import-preview');
+    return;
+  }
+
+  state.importGroups = groups;
+  state.importSkipped = skipped;
+  state.importNewAisles = newAisles;
+  state.importError = null;
+  go('import-preview');
+}
+
+function applyImport(){
+  let listsAdded = 0, listsUpdated = 0, itemsAdded = 0, aislesCreated = 0;
+
+  const toIng = it => {
+    let aisleId = '';
+    if(it.aisleName){
+      let a = aisleByName(it.aisleName);
+      if(!a){
+        a = { id: uid(), name: it.aisleName };
+        state.aisles.push(a);
+        aislesCreated++;
+      }
+      aisleId = a.id;
+      if(!state.aisleMemory[norm(it.name)]) state.aisleMemory[norm(it.name)] = aisleId;
+    }
+    return { name: it.name, amount: it.amount, unit: it.unit, aisle: aisleId };
+  };
+
+  (state.importGroups || []).forEach(g => {
+    if(g.existingId){
+      const recipe = state.recipes.find(r => r.id === g.existingId);
+      let added = 0;
+      g.items.forEach(it => {
+        const ing = toIng(it);
+        const dup = recipe.ingredients.find(x => norm(x.name) === norm(ing.name));
+        if(dup){
+          if(!dup.aisle && ing.aisle) dup.aisle = ing.aisle;
+        } else {
+          recipe.ingredients.push(ing);
+          added++;
+        }
+      });
+      if(added > 0){
+        recipe.ingredients.sort((a,b) => a.name.localeCompare(b.name));
+        listsUpdated++;
+      }
+      itemsAdded += added;
+    } else {
+      const ingredients = g.items.map(toIng).sort((a,b) => a.name.localeCompare(b.name));
+      state.recipes.push({ id: uid(), name: g.name, category: g.category, ingredients });
+      listsAdded++;
+      itemsAdded += ingredients.length;
+    }
+  });
+
+  saveRecipes(); saveAisles(); saveMemory();
+
+  const parts = [];
+  if(listsAdded) parts.push(`${listsAdded} new list${listsAdded===1?'':'s'}`);
+  if(listsUpdated) parts.push(`${listsUpdated} existing list${listsUpdated===1?'':'s'} updated`);
+  let summary = parts.length ? parts.join(', ') : 'Nothing new';
+  summary += ` — ${itemsAdded} item${itemsAdded===1?'':'s'} added`;
+  if(aislesCreated) summary += `, ${aislesCreated} new store section${aislesCreated===1?'':'s'}`;
+  if(state.importSkipped) summary += `, ${state.importSkipped} row${state.importSkipped===1?'':'s'} skipped`;
+  summary += '.';
+  state.lastImportSummary = summary;
+  state.importGroups = null;
+  state.importSkipped = 0;
+  state.importNewAisles = [];
+  state.importError = null;
+  go('category-home');
+}
+
+loadData();
+</script>
+</body>
+</html>
